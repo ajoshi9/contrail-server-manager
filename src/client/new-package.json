@@ -1,0 +1,26 @@
+{
+    "image": [
+        {
+            "category": "package",
+            "id": "image_3_00_2693",
+            "path": "/home/abhay/contrail/contrail-install-packages_3.0-2693~juno_all.deb",
+            "type": "contrail-ubuntu-package",
+            "version": "image-3-00-2693",
+            "parameters" : {
+                "provision": {
+                    "contrail": {
+                        "contrail_version": "image-3-00-2693",
+                        "package_sku": "juno"
+                    }
+                }
+            }
+        },
+        {
+            "category": "package",
+            "id": "containers_4_00_3063",
+            "path": "/sm-shared-folder/bin/contrail-cloud-docker_4.0.0.0-3063-mitaka.tgz",
+            "type": "contrail-ubuntu-package",
+            "version": "4.0.0-3063",
+        }
+    ]
+}

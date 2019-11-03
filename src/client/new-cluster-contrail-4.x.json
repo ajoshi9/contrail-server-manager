@@ -1,0 +1,345 @@
+{
+    "cluster" : [
+        {  
+            "id": "new-cluster",
+            "parameters" : {
+                "domain": "englab.juniper.net",
+                "subnet_mask": "255.255.255.240",
+                "gateway": "10.204.221.46",
+                "password": "abcd",
+                "provision": {
+                    "contrail_4": {
+                        "docker_registry": "",
+                        "docker_registry_insecure": true,
+                        "controller_image": "",
+                        "analytics_image": "",
+                        "lb_image": "",
+                        "analyticsdb_image": "",
+                        "agent_image": "",
+                        "ssl_certs_src_dir": "/etc/contrail_smgr/puppet/ssl",
+                        "tor_ca_cert_file": "/etc/contrail_smgr/puppet/ssl/ca-cert.pem",
+                        "tor_ssl_certs_src_dir": "/etc/contrail_smgr/puppet/ssl/tor",
+                        "ctrl_data_network": "192.168.1.0/24",
+                        "enable_lbaas": false,
+                        "kernel_upgrade": false,
+                        "kernel_version": "",
+                        "tsn_mode": false,
+                        "metadata_ssl_enable": false,
+                        "global_config": {
+                            "log_level": "SYS_INFO",
+                            "cloud_orchestrator": "openstack",
+                            "external_lb": false,
+                            "external_rabbitmq_servers" : "1.1.1.1, 2.2.2.2",
+                            "external_zookeeper_servers": "1.1.1.1, 2.2.2.2",
+                            "external_configdb_servers" : "1.1.1.1, 2.2.2.2",
+                            "external_openstack_servers" : "1.1.1.1, 2.2.2.2",
+                            "xmpp_auth_enable": false,
+                            "xmpp_dns_auth_enable": false,
+                            "sandesh_ssl_enable": false,
+                            "introspect_ssl_enable": false,
+                            "configdb_minimum_diskgb": "256",
+                            "analyticsdb_minimum_diskgb": "256",
+                            "analyticsdb_cassandra_user": "cassandra",
+                            "analyticsdb_cassandra_password": "cassandra",
+                            "apiserver_auth_protocol": "http",
+                            "apiserver_insecure": false,
+                            "apiserver_certfile": "/etc/contrailctl/ssl/server.pem",
+                            "apiserver_keyfile": "/etc/contrailctl/ssl/server-privatekey.pem",
+                            "apiserver_cafile": "/etc/contrailctl/ssl/ca-cert.pem"
+                        },
+                        "ha": {
+                            "contrail_internal_vip": "192.168.1.24",
+                            "contrail_external_vip": "192.168.1.24",
+                            "contrail_internal_virtual_router_id": 103,
+                            "contrail_external_virtual_router_id": 104
+                        },
+                        "openstack_config": {
+                            "management_ip": "",
+                            "ctrl-data_ip": ""
+                        },
+                        "controller_config": {
+                            "encap_priority": "MPLSoUDP,MPLSoGRE,VXLAN",
+                            "external_routers_list": {},
+                            "bgp_asn": "64512",
+                            "flow_export_rate": "10"
+                        },
+                        "control_config": {
+                            "log": "/var/log/contrail/contrail-control.log",
+                            "log_level": "SYS_NOTICE"
+                        },
+                        "dns_config": {
+                            "log": "/var/log/contrail/contrail-dns.log",
+                            "log_level": "SYS_NOTICE"
+                        },
+                        "cassandra_config": {
+                            "commitlog_dir": "/var/lib/cassandra/commitlog",
+                            "data_dirs": ["/var/lib/cassandra/data"]
+                        },
+                        "api_config": {
+                            "log_level": "SYS_NOTICE",
+                            "aaa_mode": "cloud-admin",
+                            "cloud_admin_role": "admin",
+                            "global_read_only_role": ""
+                        },
+                        "schema_config": {
+                            "log": "/var/log/contrail/contrail-schema.log",
+                            "log_level": "SYS_NOTICE"
+                        },
+                        "device_manager_config": {
+                            "log": "/var/log/contrail/contrail-device-manager.log",
+                            "log_level": "SYS_NOTICE"
+                        },
+                        "svc_monitor_config": {
+                            "log": "/var/log/contrail/contrail-svc-monitor.log",
+                            "log_level": "SYS_NOTICE"
+                        },
+                        "alarm_gen_config": {
+                            "log": "/var/log/contrail/contrail-alarm-gen.log",
+                            "log_level": "SYS_NOTICE"
+                        },
+                        "analytics_api_config": {
+                            "log_level": "SYS_NOTICE",
+                            "log": "/var/log/contrail/contrail-analytics-api.log",
+                            "aaa_mode": "cloud-admin"
+                        },
+                        "analytics_collector_config": {
+                            "log_level": "SYS_CONFIG",
+                            "log": "/var/log/contrail/contrail-collector.log",
+                            "syslog_port": "-1",
+                            "analytics_data_ttl" : "48",
+                            "analytics_config_audit_ttl" : "2160",
+                            "analytics_statistics_ttl" : "168",
+                            "analytics_flow_ttl" : "2"
+                        },
+                        "query_engine_config": {
+                            "log": "/var/log/contrail/contrail-query-engine.log",
+                            "log_level": "SYS_NOTICE"
+                        },
+                        "snmp_collector_config": {
+                            "log": "/var/log/contrail/contrail-snmp-collector.log",
+                            "log_level": "SYS_NOTICE",
+                            "introspect_port": "5920",
+                            "scan_frequency": "600",
+                            "fast_scan_frequency": "60"
+                        },
+                        "topology_config": {
+                            "log": "/var/log/contrail/contrail-topology.log",
+                            "log_level": "SYS_NOTICE"
+                        },
+                        "rabbitmq_config": {
+                            "user": "guest",
+                            "password": "guest"
+                        },
+                        "webui_config": {
+                            "enable_underlay": true
+                        },
+                        "storage_ceph_config": {
+                            "journal_size": "2048",
+                            "replica_size": "2",
+                            "ceph_object_storage": "True",
+                            "object_store_pool": "volumes"
+                        }
+                    },
+                    "openstack":{
+                        "region": "RegionOne",
+                        "multi_tenancy": true,
+                        "openstack_manage_amqp": false,
+                        "enable_ceilometer": false,
+                        "external_openstack_ip": "",
+                        "keystone" : {
+                            "ip": "",
+                            "version": "v2.0",
+                            "identity_uri": "",
+                            "auth_url": "",
+                            "admin_password": "contrail123",
+                            "admin_user": "admin",
+                            "admin_tenant": "admin",
+                            "service_tenant": "services",
+                            "auth_protocol": "http",
+                            "mysql_service_password": "",
+                            "auth_port": 35357
+                        },
+                        "neutron" : {
+                            "shared_secret": "contrail123",
+                            "service_protocol": "http",
+                            "port": 9697
+                        },
+                        "ceilometer": {
+                            "ttl": 7200,
+                            "polling_interval": 600
+                        },
+                        "amqp" : {
+                            "server_ip": "",
+                            "ip_list": [],
+                            "port": ""
+                        },
+                        "rabbitmq": {
+                            "user": "guest",
+                            "password": "guest"
+                        },
+                        "mysql": {
+                            "root_password": "c0ntrail123",
+                            "allowed_hosts": []
+                        },
+                        "ha": {
+                            "internal_vip": "",
+                            "external_vip": "",
+                            "internal_virtual_router_id": 102,
+                            "external_virtual_router_id": 101,
+                            "nfs_server": "",
+                            "nfs_glance_path": ""
+                        }
+                    },
+                    "kolla_globals": {
+                        "kolla_base_distro": "ubuntu",
+                        "openstack_release": "4.0.0",
+                        "kolla_internal_vip_address": "192.168.1.22",
+                        "enable_haproxy": "no",
+                        "enable_nova_compute": "no",
+                        "horizon_port": 8898,
+                        "docker_registry": "192.168.1.1:4000",
+                        "keystone_admin_url": "{{ admin_protocol }}://{{ kolla_internal_fqdn }}:{{ keystone_admin_port }}",
+                        "keystone_internal_url": "{{ internal_protocol }}://{{ kolla_internal_fqdn }}:{{ keystone_public_port }}",
+                        "keystone_public_url": "{{ public_protocol }}://{{ kolla_external_fqdn }}:{{ keystone_public_port }}",
+                        "enable_nova": "yes",
+                        "network_interface": "eth1",
+                        "neutron_external_interface": "eth2",
+                        "neutron_plugin_agent": "openvswitch",
+                        "nova_compute_image_full": "192.168.1.1:4000/kolla/ubuntu-binary-nova-compute:5.0.0",
+                        "neutron_server_image_full": "192.168.1.1:4000/kolla/ubuntu-binary-neutron-server: 5.0.0",
+                        "enable_neutron_opencontrail": "yes",
+                        "contrail_api_interface_address": "192.168.1.21"
+                    },
+                    "kolla_passwords": {
+                        "ceph_cluster_fsid": "c0ntrail123",
+                        "rbd_secret_uuid": "c0ntrail123",
+                        "cinder_rbd_secret_uuid": "c0ntrail123",
+
+                        "database_password": "c0ntrail123",
+
+                        "docker_registry_password": "c0ntrail123",
+
+                        "aodh_database_password": "c0ntrail123",
+                        "aodh_keystone_password": "c0ntrail123",
+
+                        "barbican_database_password": "c0ntrail123",
+                        "barbican_keystone_password": "c0ntrail123",
+                        "barbican_p11_password": "c0ntrail123",
+                        "barbican_crypto_key": "c0ntrail123",
+                        "barbican_crypto_password": "c0ntrail123",
+
+                        "keystone_admin_password": "c0ntrail123",
+                        "keystone_database_password": "c0ntrail123",
+
+                        "grafana_database_password": "c0ntrail123",
+                        "grafana_admin_password": "c0ntrail123",
+
+                        "glance_database_password": "c0ntrail123",
+                        "glance_keystone_password": "c0ntrail123",
+
+                        "gnocchi_database_password": "c0ntrail123",
+                        "gnocchi_keystone_password": "c0ntrail123",
+
+                        "karbor_database_password": "c0ntrail123",
+                        "karbor_keystone_password": "c0ntrail123",
+                        "karbor_openstack_infra_id": "c0ntrail123",
+
+                        "kuryr_keystone_password": "c0ntrail123",
+
+                        "nova_database_password": "c0ntrail123",
+                        "nova_api_database_password": "c0ntrail123",
+                        "nova_keystone_password": "c0ntrail123",
+
+                        "placement_keystone_password": "c0ntrail123",
+
+                        "neutron_database_password": "c0ntrail123",
+                        "neutron_keystone_password": "c0ntrail123",
+
+                        "cinder_database_password": "c0ntrail123",
+                        "cinder_keystone_password": "c0ntrail123",
+
+                        "cloudkitty_database_password": "c0ntrail123",
+                        "cloudkitty_keystone_password": "c0ntrail123",
+
+                        "panko_database_password": "c0ntrail123",
+                        "panko_keystone_password": "c0ntrail123",
+
+                        "freezer_database_password": "c0ntrail123",
+                        "freezer_keystone_password": "c0ntrail123",
+
+                        "sahara_database_password": "c0ntrail123",
+                        "sahara_keystone_password": "c0ntrail123",
+
+                        "designate_database_password": "c0ntrail123",
+                        "designate_pool_manager_database_password": "c0ntrail123",
+                        "designate_keystone_password": "c0ntrail123",
+                        "designate_pool_id": "c0ntrail123",
+                        "designate_rndc_key": "c0ntrail123",
+
+                        "swift_keystone_password": "c0ntrail123",
+                        "swift_hash_path_suffix": "c0ntrail123",
+                        "swift_hash_path_prefix": "c0ntrail123",
+
+                        "heat_database_password": "c0ntrail123",
+                        "heat_keystone_password": "c0ntrail123",
+                        "heat_domain_admin_password": "c0ntrail123",
+
+                        "murano_database_password": "c0ntrail123",
+                        "murano_keystone_password": "c0ntrail123",
+
+                        "ironic_database_password": "c0ntrail123",
+                        "ironic_keystone_password": "c0ntrail123",
+
+                        "ironic_inspector_database_password": "c0ntrail123",
+                        "ironic_inspector_keystone_password": "c0ntrail123",
+
+                        "magnum_database_password": "c0ntrail123",
+                        "magnum_keystone_password": "c0ntrail123",
+
+                        "mistral_database_password": "c0ntrail123",
+                        "mistral_keystone_password": "c0ntrail123",
+
+                        "trove_database_password": "c0ntrail123",
+                        "trove_keystone_password": "c0ntrail123",
+
+                        "ceilometer_database_password": "c0ntrail123",
+                        "ceilometer_keystone_password": "c0ntrail123",
+
+                        "watcher_database_password": "c0ntrail123",
+                        "watcher_keystone_password": "c0ntrail123",
+
+                        "congress_database_password": "c0ntrail123",
+                        "congress_keystone_password": "c0ntrail123",
+
+                        "rally_database_password": "c0ntrail123",
+
+                        "senlin_database_password": "c0ntrail123",
+                        "senlin_keystone_password": "c0ntrail123",
+
+                        "solum_database_password": "c0ntrail123",
+                        "solum_keystone_password": "c0ntrail123",
+
+                        "horizon_secret_key": "c0ntrail123",
+                        "horizon_database_password": "c0ntrail123",
+
+                        "telemetry_secret_key": "c0ntrail123",
+
+                        "manila_database_password": "c0ntrail123",
+                        "manila_keystone_password": "c0ntrail123",
+
+                        "octavia_database_password": "c0ntrail123",
+                        "octavia_keystone_password": "c0ntrail123",
+                        "octavia_ca_password": "c0ntrail123",
+
+                        "searchlight_keystone_password": "c0ntrail123",
+
+                        "tacker_database_password": "c0ntrail123",
+                        "tacker_keystone_password": "c0ntrail123",
+
+                        "memcache_secret_key": "c0ntrail123"
+                    }
+                }
+            }
+        }
+    ]
+}

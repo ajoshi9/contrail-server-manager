@@ -18,7 +18,12 @@ from StringIO import StringIO
 import ConfigParser
 import smgr_client_def
 import json
+import urllib
+from smgr_monitoring import ServerMgrIPMIQuerying
+from smgr_inventory import ServerMgrInventory
 
+mon_querying_obj = ServerMgrIPMIQuerying()
+inv_querying_obj = ServerMgrInventory()
 
 def parse_arguments():
     # Process the arguments
@@ -55,30 +60,72 @@ def parse_arguments():
     group.add_argument("--tag",
                         help=("tag values for the server"
                               "in t1=v1,t2=v2,... format"))
+    group.add_argument("--where",
+                       help=("sql where statement in quotation marks"))
     group.add_argument("--discovered",
                         help=("flag to get list of "
                               "newly discovered server(s)"))
-    parser_server.add_argument(
+    server_select_group = parser_server.add_mutually_exclusive_group()
+    server_select_group.add_argument("--select",
+                               help=("sql select statement in quotation marks"))
+    server_select_group.add_argument(
         "--detail", "-d", action='store_true',
         help="Flag to indicate if details are requested")
+
+    parser_server.add_argument(
+        "--show_passwords", "-s", action='store_true',
+        help=argparse.SUPPRESS)
+
+
     parser_server.set_defaults(func=show_server)
+
+    # Subparser for inventory show
+    parser_inventory = subparsers.add_parser(
+        "inventory", help='Show server inventory')
+    inv_group = parser_inventory.add_mutually_exclusive_group()
+    inv_group.add_argument("--server_id",
+                       help=("server id for server"))
+    inv_group.add_argument("--cluster_id",
+                           help=("cluster id for server"))
+    inv_group.add_argument("--tag", help=("tag values for the server"
+                                          "in t1=v1,t2=v2,... format"))
+    inv_group.add_argument("--where",
+                           help=("sql where statement in quotation marks"))
+    parser_inventory.set_defaults(func=inv_querying_obj.show_inv_details)
 
     # Subparser for cluster show
     parser_cluster = subparsers.add_parser(
         "cluster", help='Show cluster')
-    parser_cluster.add_argument("--cluster_id",
+    cluster_group = parser_cluster.add_mutually_exclusive_group()
+    cluster_group.add_argument("--cluster_id",
                         help=("cluster id for cluster"))
-    parser_cluster.add_argument(
+    cluster_group.add_argument("--where",
+                       help=("sql where statement in quotation marks"))
+    cluster_select_group = parser_cluster.add_mutually_exclusive_group()
+    cluster_select_group.add_argument("--select",
+                               help=("sql select statement in quotation marks"))
+    cluster_select_group.add_argument(
         "--detail", "-d", action='store_true',
         help="Flag to indicate if details are requested")
+
+    parser_cluster.add_argument(
+        "--show_passwords", "-s", action='store_true',
+        help=argparse.SUPPRESS)
+
     parser_cluster.set_defaults(func=show_cluster)
 
     # Subparser for image show
     parser_image = subparsers.add_parser(
         "image", help='Show image')
-    parser_image.add_argument("--image_id",
+    image_group = parser_image.add_mutually_exclusive_group()
+    image_group.add_argument("--image_id",
                         help=("image id for image"))
-    parser_image.add_argument(
+    image_group.add_argument("--where",
+                       help=("sql where statement in quotation marks"))
+    image_select_group = parser_image.add_mutually_exclusive_group()
+    image_select_group.add_argument("--select",
+                               help=("sql select statement in quotation marks"))
+    image_select_group.add_argument(
         "--detail", "-d", action='store_true',
         help="Flag to indicate if details are requested")
     parser_image.set_defaults(func=show_image)
@@ -95,24 +142,55 @@ def parse_arguments():
     parser_tag = subparsers.add_parser(
         "tag", help='Show list of server tags')
     parser_tag.set_defaults(func=show_tag)
+
+    # Subparser for monitoring show
+    parser_monitoring = subparsers.add_parser(
+        "monitoring", help='Show server inventory')
+    mon_group = parser_monitoring.add_mutually_exclusive_group()
+    mon_group.add_argument("--server_id",
+                           help=("server id for server"))
+    mon_group.add_argument("--cluster_id",
+                           help=("cluster id for server"))
+    mon_group.add_argument("--tag", help=("tag values for the server"
+                                          "in t1=v1,t2=v2,... format"))
+    mon_group.add_argument("--where",
+                           help=("sql where statement in quotation marks"))
+    parser_monitoring.set_defaults(func=mon_querying_obj.show_mon_details)
+
+    # Subparser for logs show
+    parser_logs = subparsers.add_parser("logs", help='Show logs from server')
+    #log_group   = parser_logs.add_mutually_exclusive_group()
+    parser_logs.add_argument("--server_id", help=("server id for server"))
+    parser_logs.add_argument("--file_name", help=("log file on the server"))
+    parser_logs.set_defaults(func=show_log)
+
     return parser
 # end def parse_arguments
 
-def send_REST_request(ip, port, object, match_key,
-                      match_value, detail):
+def send_REST_request(ip, port, rest_api_params, detail):
     try:
         response = StringIO()
         headers = ["Content-Type:application/json"]
-        url = "http://%s:%s/%s" % (ip, port, object)
+        url = "http://%s:%s/%s" % (ip, port, rest_api_params['object'])
         args_str = ''
-        if match_key:
-            args_str += match_key + "=" + match_value
+        if rest_api_params["select"]:
+            args_str += "select" + "=" \
+                + urllib.quote_plus(rest_api_params["select"]) + "&"
+        if rest_api_params["match_key"]:
+            args_str += urllib.quote_plus(rest_api_params["match_key"]) + "=" \
+                + urllib.quote_plus(rest_api_params["match_value"])
+
+        if rest_api_params['object'] == 'log' and rest_api_params["file_key"]:
+            args_str += "&" + urllib.quote_plus(rest_api_params["file_key"]) + "=" \
+                + urllib.quote_plus(rest_api_params["file_value"])
+
+	if 'show_passwords' in rest_api_params:
+            args_str += "&show_pass=true"
         if detail:
             args_str += "&detail"
         if args_str != '':
             url += "?" + args_str
         conn = pycurl.Curl()
-        conn.setopt(pycurl.TIMEOUT, 1)
         conn.setopt(pycurl.URL, url)
         conn.setopt(pycurl.HTTPHEADER, headers)
         conn.setopt(pycurl.HTTPGET, 1)
@@ -126,6 +204,7 @@ def send_REST_request(ip, port, object, match_key,
 def show_server(args):
     rest_api_params = {}
     rest_api_params['object'] = 'server'
+    rest_api_params['select'] = args.select
     if args.server_id:
         rest_api_params['match_key'] = 'id'
         rest_api_params['match_value'] = args.server_id
@@ -144,9 +223,16 @@ def show_server(args):
     elif args.discovered:
         rest_api_params['match_key'] = 'discovered'
         rest_api_params['match_value'] = args.discovered
+    elif args.where:
+        rest_api_params['match_key'] = 'where'
+        rest_api_params['match_value'] = args.where
     else:
         rest_api_params['match_key'] = None
         rest_api_params['match_value'] = None
+
+    if args.show_passwords:
+        rest_api_params['show_passwords'] = True
+
     return rest_api_params
 #end def show_server
 
@@ -154,14 +240,21 @@ def show_cluster(args):
     if args.cluster_id:
         match_key = 'id'
         match_value = args.cluster_id
+    elif args.where:
+        match_key = 'where'
+        match_value = args.where
     else:
         match_key = None
         match_value = None
     rest_api_params = {
         'object' : 'cluster',
         'match_key' : match_key,
-        'match_value' : match_value
+        'match_value' : match_value,
+        'select' : args.select
     }
+    if args.show_passwords:
+        rest_api_params['show_passwords'] = True
+
     return rest_api_params
 #end def show_cluster
 
@@ -169,13 +262,17 @@ def show_image(args):
     if args.image_id:
         match_key = 'id'
         match_value = args.image_id
+    elif args.where:
+        match_key = 'where'
+        match_value = args.where
     else:
         match_key = None
         match_value = None
     rest_api_params = {
         'object' : 'image',
         'match_key' : match_key,
-        'match_value' : match_value
+        'match_value' : match_value,
+        'select' : args.select
     }
     return rest_api_params
 #end def show_image
@@ -184,7 +281,8 @@ def show_all(args):
     rest_api_params = {
         'object' : 'all',
         'match_key' : None,
-        'match_value' : None
+        'match_value' : None,
+        'select' : None
     }
     return rest_api_params
 #end def show_all
@@ -193,10 +291,34 @@ def show_tag(args):
     rest_api_params = {
         'object' : 'tag',
         'match_key' : None,
-        'match_value' : None
+        'match_value' : None,
+        'select' : None
     }
     return rest_api_params
 #end def show_all
+
+def show_log(args):
+    match_key   = None
+    match_value = None
+    file_value  = None
+    file_key    = None
+    if args.server_id:
+        match_key = 'id'
+        match_value = args.server_id
+    if args.file_name:
+        file_key = 'file'
+        file_value = args.file_name
+
+    rest_api_params = {
+        'object' : 'log',
+        'match_key' : match_key,
+        'match_value' : match_value,
+        'file_key' : file_key,
+        'file_value' : file_value,
+        'select' : None
+    }
+    return rest_api_params
+#end def show_log
 
 def show_config(args_str=None):
     parser = parse_arguments()
@@ -219,15 +341,11 @@ def show_config(args_str=None):
             sys.exit(("listen_ip_addr missing in config file"
                       "%s" %config_file))
         smgr_port = smgr_config.get("listen_port", smgr_client_def._DEF_SMGR_PORT)
-    except:
-        sys.exit("Error reading config file %s" %config_file)
+    except Exception as e:
+        sys.exit("Exception: %s : Error reading config file %s" %(e.message, config_file))
     # end except
     rest_api_params = args.func(args)
-    resp = send_REST_request(smgr_ip, smgr_port,
-                      rest_api_params['object'],
-                      rest_api_params['match_key'],
-                      rest_api_params['match_value'],
-                      detail)
+    resp = send_REST_request(smgr_ip, smgr_port, rest_api_params, detail)
     smgr_client_def.print_rest_response(resp)
 # End of show_config
 
@@ -237,3 +355,4 @@ if __name__ == "__main__":
 
     show_config(sys.argv[1:])
 # End if __name__
+

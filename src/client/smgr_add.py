@@ -42,7 +42,6 @@ object_dict = {
              ("database_token", "initial database token"),
              ("use_certificates", "whether to use certificates for auth (True/False)"),
              ("multi_tenancy", "Openstack multitenancy (True/False)"),
-             ("service_token", "Service token for openstack access"),
              ("keystone_username", "Keystone user name"),
              ("keystone_password", "keystone password"),
              ("keystone_tenant", "keystone tenant name"),
@@ -76,6 +75,7 @@ object_dict = {
         ("ipmi_password", "IPMI password"),
         ("ipmi_username", "IPMI username"),
         ("ipmi_address", "IPMI address"),
+        ("ipmi_interface", "IPMI interface"),
         ("email", "email id for notifications (default use value from server's cluster)"),
         ("base_image_id", "Base image id"),
         ("package_image_id", "Package id")
@@ -211,8 +211,7 @@ def object_exists(object, object_id_key, object_id_value, payload):
                              object, payload, object_id_key,
                              object_id_value, True, "GET" )
     if resp:
-        json_str = resp.replace("null", "''")
-        smgr_object_dict = eval(json_str)
+        smgr_object_dict = json.loads(resp)
         if len(smgr_object_dict[object]):
             return True
 
@@ -235,8 +234,7 @@ def get_default_object(object, config):
         smgr_ip, smgr_port,
         "tag", payload, None,
         None, True, "GET" )
-    json_str = resp.replace("null", "''")
-    tag_dict = eval(json_str)
+    tag_dict = json.loads(resp)
     rev_tag_dict = dict((v,k) for k,v in tag_dict.iteritems())
 
     default_object = {}
@@ -295,8 +293,7 @@ def add_tag_payload(object):
     resp = send_REST_request(
         smgr_ip, smgr_port, object, payload,
         None, None, False, "GET")
-    json_str = resp.replace("null", "''")
-    payload = eval(json_str)
+    payload = json.loads(resp)
     while True:
         i = 0
         for key in fields_dict.iterkeys():
@@ -340,8 +337,7 @@ def add_payload(object, default_object):
         smgr_ip, smgr_port,
         "tag", payload, None,
         None, True, "GET" )
-    json_str = resp.replace("null", "''")
-    tag_dict = eval(json_str)
+    tag_dict = json.loads(resp)
     rev_tag_dict = dict((v,k) for k,v in tag_dict.iteritems())
     
     while True:
@@ -359,8 +355,7 @@ def add_payload(object, default_object):
         resp = send_REST_request(smgr_ip, smgr_port,
                                         object, payload, obj_id,
                                         user_input, True, "GET" )
-        json_str = resp.replace("null", "''")
-        smgr_object_dict = eval(json_str)
+        smgr_object_dict = json.loads(resp)
         obj_keys = object+"_keys"
         non_mutable_fields = eval(object_dict[obj_keys])
 
